@@ -206,3 +206,26 @@ class TestGetValueByKey(APITestCase):
 
         self.assertEqual(response.data, {"value": "big"})
 
+
+class TestGetKeysByValuePrefix(APITestCase):
+    def setUp(self):
+        KeyValue.objects.create(key="big", value="window")
+        KeyValue.objects.create(key="acceptable", value="wicca")
+        KeyValue.objects.create(key="aggressive", value="wicks")
+        KeyValue.objects.create(key="boring", value="wicky")
+        KeyValue.objects.create(key="distinct", value="Widdy")
+
+    def test_missing_prefix_parameter(self):
+        url = reverse("key_value_API:get_keys_by_value_prefix")
+
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"error": "Please use the prefix parameter."})
+
+    def test_with_prefix_parameter(self):
+        url = reverse("key_value_API:get_keys_by_value_prefix")
+
+        response = self.client.get(url, {"prefix": 'wi'},format="json")
+
+        self.assertEqual(len(response.data), 4)
