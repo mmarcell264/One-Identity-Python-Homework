@@ -32,6 +32,6 @@ def key_value_serialization_or_500(*args, **kwargs):
     try:
         serializer = KeyValueSerializer(*args, **kwargs)
     except ValueError:
-        raise APIException("Serializer field error.")
+        raise APIException({"error": "Serializer field error."})
 
     return serializer

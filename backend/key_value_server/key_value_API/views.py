@@ -43,3 +43,20 @@ def get_value_by_key(request, key):
     serializer = service.key_value_serialization_or_500(obj, fields=('value',))
 
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+@parser_classes([])
+def get_keys_by_value_prefix(request):
+    params = request.query_params
+
+    if "prefix" in params.keys():
+        query_set = KeyValue.objects.filter(value__startswith=params["prefix"])
+
+        serializer = service.key_value_serialization_or_500(query_set, fields=('key',), many=True)
+
+        return Response(serializer.data)
+
+    return Response({"error": "Please use the prefix parameter."}, HTTP_400_BAD_REQUEST)
+
