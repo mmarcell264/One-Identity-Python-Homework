@@ -185,3 +185,24 @@ class TestAddKeyValue(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, {"status": "Key-value pair has been successfully created."})
         self.assertEqual(KeyValue.objects.count(), 2)
+
+
+class TestGetValueByKey(APITestCase):
+    def setUp(self):
+        key_value = KeyValue(key="window", value="big")
+        key_value.save()
+
+    def test_key_not_found(self):
+        url = reverse("key_value_API:get_value_by_key", kwargs={"key": "trial"})
+
+        response = self.client.get(url, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_key_found(self):
+        url = reverse("key_value_API:get_value_by_key", kwargs={"key": "window"})
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.data, {"value": "big"})
+
