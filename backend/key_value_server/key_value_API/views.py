@@ -1,10 +1,11 @@
-from .serializers import KeyValueSerializer
+from .models import KeyValue
 from key_value_API import service
 from rest_framework.decorators import api_view, renderer_classes, parser_classes
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -25,9 +26,20 @@ def add_key_value(request):
     if result["error"]:
         return result["data"]
     else:
-        serializer = KeyValueSerializer(data=result["data"])
+        serializer = service.key_value_serialization_or_500(data=result["data"])
         if serializer.is_valid():
             serializer.save()
             return Response({"status": "Key-value pair has been successfully created."}, HTTP_201_CREATED)
 
         return Response(serializer.errors, HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+@renderer_classes([JSONRenderer])
+@parser_classes([])
+def get_value_by_key(request, key):
+    obj = get_object_or_404(KeyValue, key=key)
+
+    serializer = service.key_value_serialization_or_500(obj, fields=('value',))
+
+    return Response(serializer.data)

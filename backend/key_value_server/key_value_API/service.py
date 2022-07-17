@@ -1,5 +1,7 @@
+from .serializers import KeyValueSerializer
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
+from rest_framework.exceptions import APIException
 
 
 def request_data_validation(data):
@@ -24,3 +26,12 @@ def request_data_validation(data):
                 result["data"] = data
 
     return result
+
+
+def key_value_serialization_or_500(*args, **kwargs):
+    try:
+        serializer = KeyValueSerializer(*args, **kwargs)
+    except ValueError:
+        raise APIException("Serializer field error.")
+
+    return serializer
