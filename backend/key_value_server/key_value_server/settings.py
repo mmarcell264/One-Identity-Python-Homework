@@ -96,6 +96,18 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'key_value_API.authentication.BearerTokenAuthentication',
     ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'key_value_API.throttles.GetBurstRateThrottle',
+        'key_value_API.throttles.GetSustainedRateThrottle',
+        'key_value_API.throttles.PostBurstRateThrottle',
+        'key_value_API.throttles.PostSustainedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'get-burst': '60/min',
+        'get-sustained': '1000/day',
+        'post-burst': '30/min',
+        'post-sustained': '500/day',
+    }
 }
 
 # Password validation

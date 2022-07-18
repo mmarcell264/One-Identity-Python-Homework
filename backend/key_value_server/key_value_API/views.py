@@ -1,7 +1,8 @@
 from .models import KeyValue
+from key_value_API import throttles
 from key_value_API import service
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, renderer_classes, parser_classes, permission_classes
+from rest_framework.decorators import api_view, renderer_classes, parser_classes, permission_classes, throttle_classes
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
@@ -14,6 +15,7 @@ from django.shortcuts import get_object_or_404
 
 
 @api_view(["GET"])
+@throttle_classes([throttles.GetBurstRateThrottle, throttles.GetSustainedRateThrottle])
 @renderer_classes([JSONRenderer])
 @parser_classes([])
 def server_status(request):
@@ -25,6 +27,7 @@ def server_status(request):
 class CustomAuthToken(ObtainAuthToken):
     renderer_classes = [JSONRenderer]
     parser_classes = [JSONParser]
+    throttle_classes = [throttles.PostBurstRateThrottle, throttles.PostSustainedRateThrottle]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,
@@ -40,6 +43,7 @@ class CustomAuthToken(ObtainAuthToken):
 
 
 @api_view(["POST"])
+@throttle_classes([throttles.PostBurstRateThrottle, throttles.PostSustainedRateThrottle])
 @permission_classes([IsAuthenticated])
 @renderer_classes([JSONRenderer])
 @parser_classes([JSONParser])
@@ -58,6 +62,7 @@ def add_key_value(request):
 
 
 @api_view(["GET"])
+@throttle_classes([throttles.GetBurstRateThrottle, throttles.GetSustainedRateThrottle])
 @permission_classes([IsAuthenticated])
 @renderer_classes([JSONRenderer])
 @parser_classes([])
@@ -70,6 +75,7 @@ def get_value_by_key(request, key):
 
 
 @api_view(["GET"])
+@throttle_classes([throttles.GetBurstRateThrottle, throttles.GetSustainedRateThrottle])
 @permission_classes([IsAuthenticated])
 @renderer_classes([JSONRenderer])
 @parser_classes([])
