@@ -86,8 +86,6 @@ def get_keys_by_value_prefix(request):
     if "prefix" in params.keys():
         query_set = KeyValue.objects.filter(value__startswith=params["prefix"])
 
-        print(request.auth)
-
         paginator = PageNumberPagination()
         paginator.page_size = 100
         result_page = paginator.paginate_queryset(query_set, request)
