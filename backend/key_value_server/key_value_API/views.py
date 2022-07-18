@@ -1,10 +1,13 @@
 from .models import KeyValue
 from key_value_API import service
-from rest_framework.decorators import api_view, renderer_classes, parser_classes
-from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, renderer_classes, parser_classes, permission_classes
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+from rest_framework.response import Response
+from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
@@ -17,7 +20,25 @@ def server_status(request):
     return Response({"status": "Server is running."})
 
 
+# Source: https://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+#Little bit modifed
+class CustomAuthToken(ObtainAuthToken):
+    renderer_classes = [JSONRenderer]
+    parser_classes = [JSONParser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+        })
+
+
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 @renderer_classes([JSONRenderer])
 @parser_classes([JSONParser])
 def add_key_value(request):
@@ -35,6 +56,7 @@ def add_key_value(request):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 @renderer_classes([JSONRenderer])
 @parser_classes([])
 def get_value_by_key(request, key):
@@ -46,6 +68,7 @@ def get_value_by_key(request, key):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 @renderer_classes([JSONRenderer])
 @parser_classes([])
 def get_keys_by_value_prefix(request):
