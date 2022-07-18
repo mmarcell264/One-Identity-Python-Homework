@@ -9,6 +9,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
@@ -85,9 +86,15 @@ def get_keys_by_value_prefix(request):
     if "prefix" in params.keys():
         query_set = KeyValue.objects.filter(value__startswith=params["prefix"])
 
-        serializer = service.key_value_serialization_or_500(query_set, fields=('key',), many=True)
+        print(request.auth)
 
-        return Response(serializer.data)
+        paginator = PageNumberPagination()
+        paginator.page_size = 100
+        result_page = paginator.paginate_queryset(query_set, request)
+
+        serializer = service.key_value_serialization_or_500(result_page, fields=('key',), many=True)
+
+        return paginator.get_paginated_response(serializer.data)
 
     return Response({"error": "Please use the prefix parameter."}, HTTP_400_BAD_REQUEST)
 
