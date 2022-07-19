@@ -86,7 +86,7 @@ sudo snap install postman
  
   Return a key's value -> **http http://127.0.0.1:8000/api/get/<:key>/value/ 'Authorization: Bearer <your_token>'** . It will return something like this: { "value": "your_key's_value" }.
   
-- http://127.0.0.1:8000/api/get/keys/?prefix="<prefix>": 
+- http://127.0.0.1:8000/api/get/keys/?prefix="prefix": 
 
   Return keys with the specified value prefix -> **http http://127.0.0.1:8000/api/get/keys/?prefix="<your_prefix>" 'Authorization: Bearer <your_token>'** . It will return something like this: { "count": number, "next": link, "previous": link, "results": [ { "key": "key_value" }, ... ] }
   
