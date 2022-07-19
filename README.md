@@ -35,7 +35,7 @@ sudo bash postgres_setup.sh -u <your_db_user_name> -p <your_db_user_password> -d
 sudo chmod +x python_enviroment_setup.sh
 ```
 ```shell
-sudo bash postgres_setup.sh -u <your_db_user_name> -p <your_db_user_password> -d <your_db_name>
+sudo bash python_enviroment_setup.sh
 ```
 #### Activate virtual enviroment and testing and run server (from the project root):
 ```shell
@@ -111,7 +111,7 @@ I use pagination at the endpoint where the keys are returned by value prefix, be
   
 I use throttling to defend against basic DoS attack, but without authentication it is easy to get around with IP spoofing (fairly new security vulnerabilities, if i know right it, it has not been fixed yet) (source: https://stackoverflow.com/questions/70688368/which-version-of-django-rest-framework-is-affected-by-ip-spoofing, direct link: https://portswigger.net/daily-swig/ip-spoofing-bug-leaves-django-rest-applications-open-to-ddos-password-cracking-attacks). That's why I use authentication too, to be precise basic token based authentication. If you want to use the API main functionality you have to be logged in. The reason I don't use basic authentication because then POST and PUT requests need CSRF token.I have overridden the basic token-based class to geenerate and accept token this way 'Bearer <toke>' instead of the base 'Token <token>'. Postman accepts the former('Bearer') format by default. And throttling cannot be trusted fully with authentication too, cause it is not implemented thread safe  (source: https://github.com/encode/django-rest-framework/issues/8127). So if we want a proper DoS protection we need a web server like nginex (that can be used as preverse proxy and load balancer too). (The token authentication is not safe over Http too.)
   
-I installed an aditional library too what is called  django-cors-headers. It is a middleware and responsible for the Cross-Origin Resource Sharing Headers. Django rest framework by default does not adding fill this headers and if we want a UI frontend to our API javascript fetch function needs this Headers. And with this package we can set which origins are allowed too.
+I installed an aditional library too what is called  django-cors-headers. It is a middleware and responsible for the Cross-Origin Resource Sharing Headers. Django rest framework by default does not add this headers and if we want a UI frontend to our API, the javascript fetch function for example needs this Headers. And with this package we can set which origins are allowed too.
   
 I outsourced the Django application's security key and the important database connection parameters to an .env file.
 
