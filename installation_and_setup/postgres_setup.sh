@@ -38,7 +38,7 @@ EOF
 	sudo touch .env
 	#Add enviroment variables to .env file
 	echo "DB_NAME=$database" >> .env
-	echo "DB_USERNAME_NAME=$username" >> .env
+	echo "DB_USER_NAME=$username" >> .env
 	echo "DB_USER_PW=$password" >> .env
 	echo "DB_HOST=localhost" >> .env
 	echo "DB_PORT=5432" >> .env
